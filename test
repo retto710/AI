@@ -1,0 +1,379 @@
+//Adalaine
+import random 
+import numpy as np
+W1=random.random()
+W2=random.random()
+W3=random.random()
+factorAprendizaje=0.3
+data=np.array([
+    [0,0,1,1],
+    [0,1,0,2],
+    [0,1,1,3],
+    [1,0,0,4],
+    [1,0,1,5],
+    [1,1,0,6],
+    [1,1,1,7]
+
+
+])
+
+class Adalaine():
+    def __init__(self):
+        self._w=[round(random.random(),2) for _ in range(3)]
+        self._alfa=0.3
+        self._cost=[]
+    def predict(self,inputs):
+        salida=sum(w*elm for w,elm in zip(self._w,inputs))
+        return salida
+    def updatePesos(self,inputs,error):
+        self._w=[w+self._alfa*error*x for w,x in zip(self._w,inputs)]
+    def train(self,data):
+        bad=False
+        iterador=0
+        while not bad:
+            ErrorCuaMedio=0.0
+            for x in data:
+                s=self.predict(x[0:-1])
+                if x[-1]!=s:
+                    iterError=x[-1]-s
+                    self.updatePesos=(x[0:-1],iterError)
+                    ErrorCuaMedio+=(iterError**2)
+            ErrorCuaMedio=ErrorCuaMedio/2.0
+            self._cost.append(ErrorCuaMedio)
+            iterador+=1
+            if ErrorCuaMedio ==0 or iterador>=100:
+                print("Numero de iteraciones: {}".format(iterador))
+                bad=True
+
+print("Datos")
+print(data)
+print("entrenando")
+ada=Adalaine()
+ada.train(data)
+print("pesos: ",ada._w)
+print("prediccion para entrada ",data[4:-1])
+
+//hop
+
+import numpy as np
+
+patron1=""
+patron2=""
+identity=""
+def funcion_activacion_escalon(x):
+    return 1 if(x>0) else -1
+
+def inicializar_patrones(*argv):
+    global patron1,patron2,identity
+    patron1=np.array([argv[0]])
+    patron2=np.array([argv[1]])
+    identity=np.identity(4,dtype=int)
+
+
+def matriz_pesos():
+    W1=np.subtract(np.dot(patron1.transpose(),patron1),identity)
+    W2=np.subtract(np.dot(patron2.transpose(),patron2),identity)
+    matriz_sum=np.add(W1,W2)
+    return matriz_sum
+
+        
+def obtener_patron_similar(prueba):
+    matriz_prueba=np.array([prueba])
+    salida_prueba=np.dot(matriz_prueba,matriz_pesos())
+    result=map(funcion_activacion_escalon,salida_prueba.tolist()[0])
+    return list(result)
+
+def main():
+    inicializar_patrones([1,1,-1,-1],[-1,-1,1,1])
+    pruebas=[[1,-1,-1,-1],[1,1,-1,-1]]
+    resultados=[]
+    for prueba in pruebas:
+        resultados.append(obtener_patron_similar(prueba))
+    print(*resultados)
+if __name__ == "__main__":
+    main()
+ 
+ //SOMP
+ 
+ import numpy as np
+
+entradas=""
+factor_aprendizaje=0.6
+pesos=np.array([[0.2,0.8],[0.6,0.4],[0.5,0.7],[0.9,0.3]])
+
+def actualizar_pesos_ganador(ganador):
+    global pesos
+    for i in range(len(pesos)):
+        for j in range(len(pesos[0])):
+            if j==ganador:
+                pesos[i][j]=pesos[i][j]+factor_aprendizaje*(entradas[i][j]-pesos[i][j])
+    
+
+
+
+
+
+
+
+def generar_entradas(patron):
+    global entradas
+    nuevo=np.array([patron,patron])
+    entradas=nuevo.T
+
+
+
+
+generar_entradas([1,1,0,0])
+
+
+print("Pesos Iniciales")
+print(pesos)
+
+
+
+def main(iteraciones,*patrones):
+    global factor_aprendizaje
+    for iteracion in range(iteraciones):
+        print("Numero de iteracion {}".format(iteracion+1))
+        for i,actual in enumerate(patrones):
+            generar_entradas(actual)
+            resultante=np.subtract(entradas,pesos)
+            resultante_elevado=np.power(resultante,2)
+            d_1=resultante_elevado[:,0]
+            d_2=resultante_elevado[:,1]
+            ganador= 1 if np.sum(d_1) > np.sum(d_2) else 0
+            actualizar_pesos_ganador(ganador)
+            print("\nResultado del vector {}".format(i+1))
+            print(pesos)
+            print("Cluster : {}".format(ganador+1))
+        factor_aprendizaje=factor_aprendizaje/2
+        
+        
+main(100,[1,1,0,0],[0,0,0,1],[1,0,0,0],[0,0,1,1])
+
+//PERCEPTRON
+
+from numpy import array, array_equal, dot, where
+
+
+# In[6]:
+
+
+def train(set_input,set_output,set_weight):
+	salida = array([[0.0,0.0,0.0,0.0]]).T
+	count_epoca = 1
+	
+	while (not(array_equal(salida,set_output))):
+		output_epoca = []
+		nro_fila = 0
+		print(' -----EPOCA: ',count_epoca,'------')
+		for fila_epoca in set_input:
+			print('Entrada',fila_epoca)
+			real = predict(fila_epoca,set_weight)
+			print('real: ',real)
+			deseada = set_output[nro_fila,:]
+			print('deseada: ',deseada)
+			error = deseada - real		
+			print('error: ',error)
+			if(error[0] != [0]):
+				set_weight = modify_weight(set_weight,fila_epoca,error)
+			output_epoca.append(real[0])
+			nro_fila = nro_fila+1
+			print('Peso:\n',set_weight,'\n')
+			print('------------------------------')
+		salida = array([output_epoca]).T	
+		count_epoca = count_epoca + 1
+		print('Salida:\n',salida,'\n')
+		print('---------FIN --------------')
+
+	
+def predict(fila,weight):
+	return where(dot(fila,weight)>=0,1,-1)
+
+def modify_weight(weight,fila,e):
+	return weight+(e*(array([fila]).T))
+
+def main():
+
+	BIAS = 1
+	training_set_data_input = array([[-1,-1,BIAS],[1,-1,BIAS],[-1,1,BIAS],[1,1,BIAS]])
+	training_set_data_output = array([[-1,-1,-1,1]]).T
+	set_data_weight = array([[1,1,0.5]]).T
+	print('Training_data_input:\n',training_set_data_input,'\n')
+	print('Training_data_output:\n',training_set_data_output,'\n')	
+	print('Init_weight:\n',set_data_weight,'\n')
+
+	train(training_set_data_input,training_set_data_output,set_data_weight)
+
+main()
+//backpropa
+import numpy as np 
+
+def sigmoid (x):
+    return 1/(1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+inputs = np.array([[0,0],[0,1],[1,0],[1,1]])
+expected_output = np.array([[0],[1],[1],[0]])
+
+epochs = 10000
+lr = 0.25
+inputLayerNeurons, hiddenLayerNeurons, outputLayerNeurons = 2,2,1
+
+hidden_weights = np.random.uniform(size=(inputLayerNeurons,hiddenLayerNeurons))
+hidden_bias =np.random.uniform(size=(1,hiddenLayerNeurons))
+output_weights = np.random.uniform(size=(hiddenLayerNeurons,outputLayerNeurons))
+output_bias = np.random.uniform(size=(1,outputLayerNeurons))
+
+print("Initial hidden weights: ")
+print(*hidden_weights)
+print("Initial hidden biases: ")
+print(*hidden_bias)
+print("Initial output weights: ")
+print(*output_weights)
+print("Initial output biases: ")
+print(*output_bias)
+
+for _ in range(epochs):
+	#Forward Propagation
+	hidden_layer_activation = np.dot(inputs,hidden_weights)
+	hidden_layer_activation += hidden_bias
+	hidden_layer_output = sigmoid(hidden_layer_activation)
+
+	output_layer_activation = np.dot(hidden_layer_output,output_weights)
+	output_layer_activation += output_bias
+	predicted_output = sigmoid(output_layer_activation)
+
+	#Backpropagation
+	error = expected_output - predicted_output
+	d_predicted_output = error * sigmoid_derivative(predicted_output)
+	
+	error_hidden_layer = d_predicted_output.dot(output_weights.T)
+	d_hidden_layer = error_hidden_layer * sigmoid_derivative(hidden_layer_output)
+
+	#Updating Weights and Biases
+	output_weights += hidden_layer_output.T.dot(d_predicted_output) * lr
+	output_bias += np.sum(d_predicted_output) * lr
+	hidden_weights += inputs.T.dot(d_hidden_layer) * lr
+	hidden_bias += np.sum(d_hidden_layer) * lr
+
+print("Final hidden weights: ")
+print(hidden_weights)
+print("Final hidden bias: ")
+print(hidden_bias)
+print("Final output weights: ")
+print(output_weights)
+print("Final output bias: ")
+print(output_bias)
+
+print("\nOutput from neural network after 10,000 epochs: ")
+print(predicted_output)
+//logica
+from kanren import Relation,fact, facts, var, run, conde
+ 
+Progenitor = Relation()
+Hombre = Relation()
+Mujer = Relation()
+ 
+#Hechos
+fact(Hombre, "Homero")
+fact(Hombre, "Bart")
+fact(Hombre, "Abraham")
+fact(Hombre, "Clancy")
+fact(Hombre, "Kang")
+fact(Mujer, "Jackeline")
+fact(Mujer, "Mona")
+fact(Mujer, "Marge")
+fact(Mujer, "Paty")
+fact(Mujer, "Selma")
+fact(Mujer, "Maggie")
+fact(Mujer, "Lisa")
+facts(Progenitor, ("Homero", "Bart"),
+                  ("Marge", "Bart"))
+facts(Progenitor, ("Homero", "Lisa"),
+                  ("Marge", "Lisa"))
+facts(Progenitor, ("Kang", "Maggie"),
+                  ("Marge", "Maggie"))
+facts(Progenitor, ("Abraham", "Homero"),
+                  ("Mona", "Homero"))
+facts(Progenitor, ("Clancy", "Marge"),
+                  ("Jackeline", "Marge"))
+facts(Progenitor, ("Clancy", "Selma"),
+                  ("Jackeline", "Selma"))
+facts(Progenitor, ("Clancy", "Paty"),
+                  ("Jackeline", "Paty"))
+ 
+#Reglas
+
+def Abuela(X, Y):
+    Z = var()
+    return conde((Progenitor(X, Z), Progenitor(Z, Y), Mujer(X)))
+
+ 
+#Tarea:  Madre, Padre, Esposos, Herman@s
+ 
+#####################################################
+X = var()
+Y = var()
+Z = var()
+#1- El abuela de Bart
+res = run(0, X, Abuela(X, "Bart"))
+print(res)
+
+
+//# Crear una gramatica
+import nltk
+from nltk import CFG
+from nltk.parse.generate import generate
+#1) <frase>::= <sujeto><predicado>
+#2) <sujeto>::= juan | pedro | maría | salgado
+#3) <predicado>::= <verbo transitivo><objeto directo>
+#4) <predicado>::= <verbo intransitivo>
+#5) <verbo transitivo>::= ama | lava | peina | adora
+#6) <objeto directo>::= paula | antonio | sultán
+#7) <verbo intransitivo>::= corre | salta | camina
+
+Gramtica1 = CFG.fromstring("""
+
+F -> SU P
+SU -> 'juan' | 'pedro' | 'maria' | 'salgado'
+P -> VT OD
+P -> VI
+VT -> 'ama' | 'lava' | 'peina' | 'adora'
+OD -> 'paula' | 'antonio' | 'sultan'
+VI -> 'corre' | 'salta' | 'camina'
+""")
+
+print('La gramatica:', Gramtica1)
+print('Inicio =>', Gramtica1.start())
+print('Productiones =>')
+
+# Mostrar las producciones de la gramatica
+print(Gramtica1.productions())
+
+print('Cobertura de palabras ingresadas a la gramatica:')
+
+try:
+    #maría ama antonio
+    Gramtica1.check_coverage(['maria', 'ama', 'antonio'])
+    print("Todas las palabras estan cubiertas")
+except:
+    print("Error")
+
+#try:
+#    print(grammar.check_coverage(['a','toy']))
+#except:
+ #   print("Algunas palabras no estan cubiertas")
+
+for sentence in generate(Gramtica1, n=50):
+    print(' '.join(sentence))
+
+Frese = ['maria', 'ama', 'antonio']
+parser = nltk.ChartParser(Gramtica1)
+for Arbol in parser.parse(Frese):
+    print(Arbol)
+
+
+    
