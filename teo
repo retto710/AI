@@ -1,0 +1,42 @@
+Perceptron Simple
+Seleccionar un ejemplo 𝑥 del conjunto de entrenamiento
+Se calcula la salida de la red: y = 𝑓(𝑤1𝑥1 + 𝑤2 𝑥2, … , 𝑤𝑛𝑥𝑛 + 𝜃)
+𝑦 = ቊ
++1, 𝑠𝑖 𝑤1𝑥1 + 𝑤2𝑥2 + 𝜃 > 0
+−1, 𝑠𝑖 𝑤1𝑥1 + 𝑤2𝑥2 + 𝜃 ≤ 0
+Si 𝑦 ≠ 𝑑(𝑥) (clasificación incorrecta) se modifican los pesos y el umbral:
+𝑤𝑖(𝑡 + 1) = 𝑤𝑖(𝑡) + 𝑑(𝑥) ∗ 𝑥𝑖
+𝜃 (𝑡 + 1) = 𝜃(𝑡) + 𝑑(𝑥)
+ADALINE
+ Inicializar los pesos y umbral de forma aleatoria
+ Seleccionar un ejemplo 𝑥 del conjunto de entrenamiento
+3. Calcular la salida de la red: y = 𝑓(𝑤1𝑥1 + ⋯ + 𝑤𝑛𝑥𝑛 + 𝜃)
+y obtener la diferencia 𝑑𝑝 − 𝑦𝑝
+4. Para todos los pesos y para el umbral, calcular
+∆𝑤𝑖 = 𝛼 |𝑑𝑝 − 𝑦𝑝| 𝑥𝑖 
+∆𝜃𝑖 = 𝛼 |𝑑𝑝 − 𝑦𝑝|
+5. Modificar los pesos y el umbral del siguiente modo
+𝑤𝑖(𝑡 + 1) = 𝑤𝑖(𝑡) + ∆𝑤𝑖
+𝜃 (𝑡 + 1) = 𝜃(𝑡) + ∆𝜃𝑖 
+El perceptron utiliza la salida de la función umbral (binaria) para el aprendizaje. Sólo
+se tiene en cuenta si se ha equivocado o no.
+o En Adaline se utiliza directamente la salida de la red (real) teniendo en cuenta cuánto
+se ha equivocado.
+#multicapa
+//back
+capa oculta:
+neurona 
+entrada : x1*w11 + x2*w12
+salida > 1 / (1 + e ^(-entrada))
+cada salida:
+entrada : w21* salida1 + w22*salida2 
+salida : 1 / (1 + e ^(-entrada))
+//nuevos pesos
+//capa salida
+error real : 1-salidacapasalida
+∆error = error real ( 1-error real) ^2
+nuevo w2 :  [ w2 + tasaprendizaje*salidaoculta1*∆error ]  [a]
+            [ w2 + tasaprendizaje*salidaoculta2*∆error ]  [b]
+//capa oculta
+error estiamdo : salidaneurona*(1-salidaneurona)*nuevow2[a]*∆error   [c]
+nuevo w1 :  [ w1(i) + tasaprendizaje*x1*[c]]
