@@ -1,0 +1,11 @@
+Los pixeles negros podrían representarse mediante el valor binario 1, y los blancos
+con el valor binario -1
+E 1 = [1, 1,-1,-1] y E 2 = [-1,-1, 1, 1]
+Para la entrada E1, la salida W 1 es:
+TE1.E1 - I 
+Sumando W 1 y W 2 se obtiene la matriz de pesos definitiva, W:
+Una vez finalizada la fase de aprendizaje (entrenamiento), la red podría ser
+utilizada como memoria asociativa
+E1.W
+# > 0 =1
+# < 0 -1
